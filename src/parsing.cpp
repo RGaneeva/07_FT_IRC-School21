@@ -63,27 +63,32 @@ int Server::checkClient(string str)
 
 int Server::cmdNICK(string str, int n, struct kevent &event)//доб. замену ника
 {
-    string nick = "";
-    vector<string> buff;
-    int j = 0;
-    for (int i = n; i < str.length();i++)
-    {
-        if (str[i] == ' ')
-        {
-            i++;
-            int k = i;
-            for (int h = 0;h< str.length() - i;h++)
-            {
-                if(str[k] >= 33 && str[k] <= 126)
-                {
-                    nick[h] = str[k];
-                    k++;
-                }
-            }
-            break;
-        }
-    }
-    printf("%s\n", nick.c_str());
+    string nick(str.substr(str.find_first_of(' ') + 1));
+    size_t found = nick.find('\n');
+    if (found > 0)
+        nick.erase(found);
+
+    // vector<string> buff;
+    // int j = 0;
+    // for (int i = n; i < str.length();i++)
+    // {
+    //     if (str[i] == ' ')
+    //     {
+    //         i++;
+    //         int k = i;
+    //         for (int h = 0;h< str.length() - i;h++)
+    //         {
+    //             if(str[k] >= 33 && str[k] <= 126)
+    //             {
+    //                 nick[h] = str[k];
+    //                 k++;
+    //             }
+    //         }
+    //         break;
+    //     }
+    // }
+
+    printf("%s", nick.c_str());
     if (nick.length() < 1)
         ERR(":No nickname given", strerror(errno));//431???
     if (checkClient(nick) == 0)
@@ -114,30 +119,45 @@ int Server::parsBuffer(string str, struct kevent &event)
         printf("users: %lu\n", users.size());
         printf("fds: %lu\n", fds.size());
         vector<string>::iterator it2 = users.begin();
-        for (vector<struct kevent>::iterator it = fds.begin();it!=fds.end() || it2 != users.end();it++, it2++)
+        for (vector<struct kevent>::iterator it = fds.begin();it!=fds.end() || it2!=users.end();)
+        // for (vector<struct kevent>::iterator it = fds.begin();it!=fds.end() || it2!=users.end();it++, it2++)
         {
+            for(int i=0;i<users.size();i++)
+                printf("vector: %s\n", users[i].c_str());
         	if (it->ident == event.ident)
         	{
                 printf("users: %lu\n", users.size());
                 printf("fds: %lu\n", fds.size());
+                printf("in_users: %s\n", it2->c_str());
+                printf("in_fds: %lu\n", it->ident);
                 if (users.size() == 1)
                 {
+                    printf("users_size: %lu\n", users.size());
                     users.clear();
                     fds.clear();
                     break;
                 }
                 else
+                {
+                    printf("users_size_erase: %lu\n", users.size());
                     users.erase(it2);
+                }
                 if (fds.size() == 1)
                 {
+                    std::cout << "asdasd";
                     users.clear();
                     fds.clear();
                     break;
                 }
                 else
+                {
+                    printf("fds_size_erase: %lu\n", fds.size());
         		    fds.erase(it);
+                }
         	}
-        	
+            it2 = users.begin();
+            it = fds.begin();
+        	printf("----------------\n");
         }
         onClientDisconnect(event);
     }

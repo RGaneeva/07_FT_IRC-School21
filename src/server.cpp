@@ -26,6 +26,21 @@ m_event_list(),m_receive_buf(),m_sock_state()
 	fcntl(m_sock, F_SETFL, O_NONBLOCK);
 }
 
+// Server & Server::operator=(Server const & copy) 
+// {
+// 	// m_sock_reuse = copy.m_sock_reuse;
+//     // m_sock = copy.m_sock;
+//     // m_backlog = copy.m_backlog;
+//     // m_kqueue = copy.m_kqueue;
+// 	users = copy.users;
+// 	for (int i = 0; i < users.size(); i++)
+// 		users[i]=copy.users[i];
+//     fds = copy.fds;
+// 	for (int i = 0; i < fds.size(); i++)
+// 		fds[i]=copy.fds[i];
+// 	return (*this);
+// }
+
 int Server::bind()
 {
     // bind привязывает к сокету адрес из структуры m_address с его длинной.

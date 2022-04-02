@@ -22,6 +22,7 @@ class Server
 {
   public:
     Server(const char *addr, const int port, int backlog);
+    Server & operator=(const Server & copy);
     ~Server();
     void onRead(struct kevent& event);
     void onEOF(struct kevent& event);
